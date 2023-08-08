@@ -1,0 +1,14 @@
+builddir = build
+
+rule tsc
+    description = Compile $in to JavaScript
+    command = tsc --strict --pretty --outFile $out $in
+
+rule cp
+    description = Copy $in to build directory
+    command = cp $in $out
+
+
+build build/scripts/main.js: tsc src/scripts/main.ts
+build build/index.html: cp src/index.html
+build build/css/style.css: cp src/css/style.css
