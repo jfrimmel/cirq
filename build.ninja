@@ -12,3 +12,6 @@ rule cp
 build build/scripts/main.js: tsc src/scripts/main.ts
 build build/index.html: cp src/index.html
 build build/css/style.css: cp src/css/style.css
+
+# icons
+build build/icons/icon.svg: cp icon.svg
