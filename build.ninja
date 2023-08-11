@@ -26,3 +26,4 @@ build $site/icons/128px.png: svg-render icon.svg
     size = 128
 build $site/icons/64px.png: svg-render icon.svg
     size = 64
+build $site/worker.js: tsc src/worker.ts

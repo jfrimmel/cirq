@@ -1,0 +1,31 @@
+{
+    "name": "cirq",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#3B3E44",
+    "theme_color": "#22be22",
+    "icons": [
+        {
+            "src": "icons/icon.svg",
+            "sizes": "any",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/512px.png",
+            "sizes": "512x512",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/256px.png",
+            "sizes": "256x256"
+        },
+        {
+            "src": "icons/128px.png",
+            "sizes": "128x128"
+        },
+        {
+            "src": "icons/64px.png",
+            "sizes": "64x64"
+        }
+    ]
+}
