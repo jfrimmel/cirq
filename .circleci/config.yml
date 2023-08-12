@@ -12,8 +12,38 @@ jobs:
       - run:
           name: Output static files
           command: find build/site -print0 | sort -z | xargs -0 -n 1 echo
+      - persist_to_workspace:
+          root: build
+          paths: site
+  deploy:
+    docker:
+      - image: cimg/node:16.20
+    steps:
+      - attach_workspace:
+          at: build
+      - run:
+          name: Disable jekyll builds
+          command: touch build/site/.nojekyll
+      - run:
+          name: Install and configure gh-pages
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config --global user.email ci-build@cirq
+            git config --global user.name ci-build
+      - add_ssh_keys:
+          fingerprints:
+            - "c9:5a:b6:dc:8c:36:9f:7c:67:bb:0a:3a:c6:6d:87:9b"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dotfiles --message '[skip ci] Updates' --dist build/site
+
 
 workflows:
   ci:
     jobs:
       - build
+      - deploy:
+          requires: [build]
+          filters:
+            branches:
+              only: main
