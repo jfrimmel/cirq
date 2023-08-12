@@ -13,6 +13,10 @@ rule svg-render
     description = Rendering $in to ${size}px
     command = rsvg-convert --width $size --height $size --format png --output $out $in
 
+rule svg2ico
+    description = Render $in to .ico
+    command = convert -background none -define 'icon:auto-resize=16,24,32,64,128,256' $in $out
+
 build $site/scripts/main.js: tsc src/scripts/main.ts
 build $site/index.html: cp src/index.html
 build $site/manifest.json: cp src/manifest.json
@@ -26,4 +30,5 @@ build $site/icons/128px.png: svg-render icon.svg
     size = 128
 build $site/icons/64px.png: svg-render icon.svg
     size = 64
+build $site/favicon.ico: svg2ico icon.svg
 build $site/worker.js: tsc src/worker.ts
