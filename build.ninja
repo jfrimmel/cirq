@@ -9,9 +9,9 @@ rule cp
     description = Copy $in to build directory
     command = cp $in $out
 
-rule svg-render
+rule svg2png
     description = Rendering $in to ${size}px
-    command = rsvg-convert --width $size --height $size --format png --output $out $in
+    command = convert -background none -resize ${size}x${size} $in $out
 
 rule svg2ico
     description = Render $in to .ico
@@ -22,13 +22,13 @@ build $site/index.html: cp src/index.html
 build $site/manifest.json: cp src/manifest.json
 build $site/css/style.css: cp src/css/style.css
 build $site/icons/icon.svg: cp icon.svg
-build $site/icons/512px.png: svg-render icon.svg
+build $site/icons/512px.png: svg2png icon.svg
     size = 512
-build $site/icons/256px.png: svg-render icon.svg
+build $site/icons/256px.png: svg2png icon.svg
     size = 256
-build $site/icons/128px.png: svg-render icon.svg
+build $site/icons/128px.png: svg2png icon.svg
     size = 128
-build $site/icons/64px.png: svg-render icon.svg
+build $site/icons/64px.png: svg2png icon.svg
     size = 64
 build $site/favicon.ico: svg2ico icon.svg
 build $site/worker.js: tsc src/worker.ts
