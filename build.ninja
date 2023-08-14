@@ -3,7 +3,7 @@ site = $builddir/site
 
 rule tsc
     description = Compile $in to JavaScript
-    command = tsc --strict --pretty --outFile $out $in
+    command = tsc --strict --pretty --target es6 --outFile $out $in
 
 rule cp
     description = Copy $in to build directory
