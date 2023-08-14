@@ -35,7 +35,7 @@ build $site/worker.js: tsc src/worker.ts
 
 rule cargo
     description = Compile Rust to WASM
-    command = cargo build --release --color=always --quiet
+    command = cargo build --release --color=always --quiet && touch $out
     depfile = $builddir/wasm32-unknown-unknown/release/wasm.d
     deps = gcc
 
