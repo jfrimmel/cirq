@@ -1,7 +1,7 @@
 /// <reference lib="esnext" />
 /// <reference lib="dom" />
 'use strict';
-window.onload = function () {
+window.onload = () => {
     // if supported in the current browser (and mode), then register the service
     // worker for the PWA. A browser might not support this for various reasons,
     // e.g. it simply does not support PWAs or it runs in private mode or the
