@@ -32,3 +32,12 @@ build $site/icons/64px.png: svg2png icon.svg
     size = 64
 build $site/favicon.ico: svg2ico icon.svg
 build $site/worker.js: tsc src/worker.ts
+
+rule cargo
+    description = Compile Rust to WASM
+    command = cargo build --release --target wasm32-unknown-unknown --target-dir $builddir --color=always --quiet
+    depfile = $builddir/wasm32-unknown-unknown/release/wasm.d
+    deps = gcc
+
+build $builddir/wasm32-unknown-unknown/release/wasm.wasm: cargo Cargo.toml
+build $site/cirq.wasm: cp $builddir/wasm32-unknown-unknown/release/wasm.wasm
