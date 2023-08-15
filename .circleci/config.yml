@@ -26,6 +26,10 @@ jobs:
           name: Disable jekyll builds
           command: touch build/site/.nojekyll
       - run:
+          # https://discuss.circleci.com/t/cant-ignore-the-gh-pages-branch/2002/4
+          name: Add CircleCI definitions for this branch
+          command: mkdir build/site/.circleci && cp .circleci/config.yml build/site/.circleci/config.yml
+      - run:
           name: Install and configure gh-pages
           command: |
             npm install -g --silent gh-pages@2.0.1
