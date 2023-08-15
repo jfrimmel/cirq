@@ -10,3 +10,6 @@ window.onload = () => {
         navigator.serviceWorker.register('worker.js');
     }
 };
+// @ts-ignore
+import init, { greet } from "./wasm.js";
+init().then(() => greet());
