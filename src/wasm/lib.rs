@@ -1,3 +1,11 @@
-pub fn reverse(input: &str) -> String {
-    input.chars().rev().collect()
+use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+extern "C" {
+    fn alert(s: &str);
+}
+
+#[wasm_bindgen]
+pub fn greet() {
+    alert("Hello, world!");
 }

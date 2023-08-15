@@ -41,5 +41,9 @@ rule cargo
     depfile = $builddir/wasm32-unknown-unknown/release/wasm.d
     deps = gcc
 
+rule wasm-bindgen
+    description = Generate WASM bindings
+    command = wasm-bindgen --target web --out-dir $site/scripts/ $in
+
 build $builddir/wasm32-unknown-unknown/release/wasm.wasm: cargo Cargo.toml
-build $site/cirq.wasm: cp $builddir/wasm32-unknown-unknown/release/wasm.wasm
+build $site/scripts/wasm_bg.wasm $site/scripts/wasm_bg.wasm.d.ts $site/scripts/wasm.d.ts $site/scripts/wasm.js: wasm-bindgen $builddir/wasm32-unknown-unknown/release/wasm.wasm
