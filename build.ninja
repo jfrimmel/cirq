@@ -1,9 +1,10 @@
 builddir = build
 site = $builddir/site
+jsoutdir = $site/scripts
 
 rule tsc
     description = Compile $in to JavaScript
-    command = tsc --strict --pretty --target es6 --outFile $out $in
+    command = tsc --strict --pretty --target es6 --module es6 --outDir $jsoutdir $in
 
 rule cp
     description = Copy $in to build directory
@@ -32,3 +33,17 @@ build $site/icons/64px.png: svg2png icon.svg
     size = 64
 build $site/favicon.ico: svg2ico icon.svg
 build $site/worker.js: tsc src/worker.ts
+    jsoutdir = $site
+
+rule cargo
+    description = Compile Rust to WASM
+    command = cargo build --release --color=always --quiet && touch $out
+    depfile = $builddir/wasm32-unknown-unknown/release/wasm.d
+    deps = gcc
+
+rule wasm-bindgen
+    description = Generate WASM bindings
+    command = wasm-bindgen --target web --out-dir $site/scripts/ $in
+
+build $builddir/wasm32-unknown-unknown/release/wasm.wasm: cargo Cargo.toml
+build $site/scripts/wasm_bg.wasm $site/scripts/wasm_bg.wasm.d.ts $site/scripts/wasm.d.ts $site/scripts/wasm.js: wasm-bindgen $builddir/wasm32-unknown-unknown/release/wasm.wasm
