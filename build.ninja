@@ -12,7 +12,7 @@ rule cp
 
 rule svg2png
     description = Rendering $in to ${size}px
-    command = convert -background none -resize ${size}x${size} $in $out
+    command = convert -background none -resize ${size}x${size} -define png:exclude-chunks=date,time $in $out
 
 rule svg2ico
     description = Render $in to .ico
