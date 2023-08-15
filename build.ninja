@@ -1,9 +1,10 @@
 builddir = build
 site = $builddir/site
+jsoutdir = $site/scripts
 
 rule tsc
     description = Compile $in to JavaScript
-    command = tsc --strict --pretty --target es6 --outFile $out $in
+    command = tsc --strict --pretty --target es6 --module es6 --outDir $jsoutdir $in
 
 rule cp
     description = Copy $in to build directory
@@ -32,6 +33,7 @@ build $site/icons/64px.png: svg2png icon.svg
     size = 64
 build $site/favicon.ico: svg2ico icon.svg
 build $site/worker.js: tsc src/worker.ts
+    jsoutdir = $site
 
 rule cargo
     description = Compile Rust to WASM
