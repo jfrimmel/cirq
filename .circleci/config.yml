@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: jfrimmel/cirq:2.1
+      - image: jfrimmel/cirq:2.2
     steps:
       - checkout
       - run:
