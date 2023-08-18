@@ -1,8 +1,10 @@
-use std::rc::Rc;
+use std::{panic, rc::Rc};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen(start)]
 pub fn main() {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
+
     let window = web_sys::window().expect("Failed to get `window`");
     let document = window.document().expect("Failed to get `document`");
 
