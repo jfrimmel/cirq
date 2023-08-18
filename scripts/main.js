@@ -11,5 +11,5 @@ window.onload = () => {
     }
 };
 // @ts-ignore
-import init from "./wasm.js";
-init().then(() => console.log("initialized WASM"));
+import init, { greet } from "./wasm.js";
+init().then(() => greet());
