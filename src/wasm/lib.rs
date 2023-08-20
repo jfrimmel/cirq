@@ -1,5 +1,8 @@
-use std::{panic, rc::Rc};
+use std::panic;
 use wasm_bindgen::prelude::*;
+use winit::dpi::PhysicalSize;
+use winit::event::Event;
+use winit::platform::web::{EventLoopExtWebSys, WindowBuilderExtWebSys, WindowExtWebSys};
 
 #[wasm_bindgen(start)]
 pub fn main() {
@@ -15,25 +18,16 @@ pub fn main() {
         .expect("`rendering-surface` must be a <canvas>");
     document.body().unwrap().append_child(&canvas).unwrap();
 
-    let canvas = Rc::new(canvas);
-    let window = Rc::new(window);
+    let width = 300;
+    let height = 150;
 
-    let on_resize: Closure<dyn Fn()> = Closure::new({
-        let window = Rc::clone(&window);
-        let canvas = Rc::clone(&canvas);
-        move || draw(&window, &canvas)
-    });
-    window.set_onresize(Some(on_resize.into_js_value().unchecked_ref()));
-
-    draw(&window, &canvas);
-}
-
-fn draw(window: &web_sys::Window, canvas: &web_sys::HtmlCanvasElement) {
-    let width = window.inner_width().unwrap().as_f64().unwrap().round() as u32;
-    let height = window.inner_height().unwrap().as_f64().unwrap().round() as u32;
-
-    canvas.set_width(width);
-    canvas.set_height(height);
+    let event_loop = winit::event_loop::EventLoop::new().unwrap();
+    let window = winit::window::WindowBuilder::new()
+        .with_canvas(Some(canvas))
+        .with_inner_size(PhysicalSize::new(width, height))
+        .build(&event_loop)
+        .expect("cannot create window");
+    let canvas = window.canvas().unwrap();
 
     let context = canvas
         .get_context("2d")
@@ -42,10 +36,18 @@ fn draw(window: &web_sys::Window, canvas: &web_sys::HtmlCanvasElement) {
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
         .unwrap();
 
-    context.begin_path();
-    context.move_to(0.0, 0.0);
-    context.line_to(width as f64, height as f64);
-    context.move_to(0.0, height as f64);
-    context.line_to(width as f64, 0.0);
-    context.stroke();
+    event_loop.spawn(move |event, _, control_flow| {
+        control_flow.set_wait();
+        match event {
+            Event::RedrawRequested(_) => {
+                context.begin_path();
+                context.move_to(0.0, 0.0);
+                context.line_to(width.into(), height.into());
+                context.move_to(width.into(), 0.0);
+                context.line_to(0.0, height.into());
+                context.stroke();
+            }
+            _ => {}
+        }
+    });
 }
