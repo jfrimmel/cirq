@@ -5,6 +5,7 @@
 //! obtaining the rendering context.
 use wasm_bindgen::{prelude::Closure, JsCast};
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use web_sys::{ResizeObserver, ResizeObserverEntry, ResizeObserverSize};
 
 /// An error occurred, that prevents creating the canvas.
 ///
@@ -32,6 +33,29 @@ pub fn create_canvas() -> Result<HtmlCanvasElement, Error> {
     container
         .append_child(&canvas)
         .expect("insertion should be valid");
+
+    // make sure, that the canvas is resized, if the parent container has
+    // changed dimensions. This way, the canvas gets resized which is internally
+    // listed to by `winit`, which in turn provides a `WindowEvent::Resized`
+    // event to pass this to the user code.
+    let on_resize = {
+        let canvas = canvas.clone();
+        move |entries: js_sys::Array| {
+            let entry: ResizeObserverEntry = entries.get(0).unchecked_into();
+            let size: ResizeObserverSize = entry
+                .device_pixel_content_box_size()
+                .get(0)
+                .unchecked_into();
+            let width = size.inline_size() as u32;
+            let height = size.block_size() as u32;
+
+            canvas.set_width(width);
+            canvas.set_height(height);
+        }
+    };
+    let on_resize = Closure::<dyn Fn(_)>::new(on_resize);
+    let observer = ResizeObserver::new(on_resize.into_js_value().unchecked_ref()).unwrap();
+    observer.observe(&container);
 
     body.append_child(&container)
         .expect("insertion should be valid");
