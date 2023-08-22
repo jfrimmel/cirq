@@ -18,6 +18,7 @@ pub fn main() {
         .expect("cannot create window");
 
     let mut renderer = renderer::Renderer::new(window);
+    event_loop.listen_device_events(winit::event_loop::DeviceEvents::Never);
     event_loop.spawn(move |event, _, control_flow| {
         web_sys::console::debug_1(&format!("event: {event:?}").into());
         control_flow.set_wait();
@@ -27,6 +28,7 @@ pub fn main() {
                 event: winit::event::WindowEvent::Resized(size),
                 ..
             } => renderer.resize(size),
+            // winit::event::DeviceEvent::* => { /* not generated */ }
             _ => {}
         }
     });
