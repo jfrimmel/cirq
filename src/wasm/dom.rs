@@ -61,3 +61,16 @@ pub fn create_canvas() -> Result<HtmlCanvasElement, Error> {
         .expect("insertion should be valid");
     Ok(canvas)
 }
+
+/// Obtain the rendering context of a given canvas.
+///
+/// This always selects the standard 2D rendering context (i.e. no WebGL and
+/// no WGPU).
+pub fn rendering_context(canvas: &HtmlCanvasElement) -> CanvasRenderingContext2d {
+    canvas
+        .get_context("2d")
+        .expect("2d is a valid rendering context and is the only type used")
+        .unwrap()
+        .dyn_into::<CanvasRenderingContext2d>()
+        .expect("2D-rendering yields a 2D canvas rendering context")
+}
