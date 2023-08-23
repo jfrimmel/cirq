@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" baseProfile="full"
+    width="32mm" height="32mm" viewBox="-256 -256 512 512">
+    <title>warning icon</title>
+    <desc>Icon of a yellow triangle with an exclamation mark on it.</desc>
+
+    <polygon points="-200,180 200,180 0,-180" fill="yellow" stroke="black" stroke-width="20px" rx="20px" ry="20px"
+        stroke-linejoin="round" />
+    <line x1="0" x2="0" y1="-60" y2="65" stroke="black" stroke-width="30px" stroke-linecap="round" />
+    <circle cx="0" cy="120" r="15px" />
+</svg>
