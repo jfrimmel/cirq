@@ -6,6 +6,11 @@ html {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+body {
+    margin: 0;
+}
+
+/* styling of the <noscript> tag and its children */
 .noscript-msg {
     position: absolute;
     top: 0;
@@ -31,10 +36,7 @@ html {
     font-size: 1rem;
 }
 
-body {
-    margin: 0;
-}
-
+/* styling of the rendering canvas */
 canvas {
     display: block;
 }
