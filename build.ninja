@@ -34,6 +34,7 @@ build $site/icons/64px.png: svg2png icon.svg
 build $site/favicon.ico: svg2ico icon.svg
 build $site/worker.js: tsc src/worker.ts
     jsoutdir = $site
+build $site/images/warning.svg: cp src/images/warning.svg
 
 rule cargo
     description = Compile Rust to WASM
