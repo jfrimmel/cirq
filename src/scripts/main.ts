@@ -15,4 +15,15 @@ window.onload = () => {
 // @ts-ignore
 import init, { } from "./wasm.js";
 
-init().then(() => console.log("initialized WASM"));
+init().then(() => {
+    console.debug("Initialization done");
+
+    // fade the loading screen out
+    const loading_screen = document.getElementById("loading-animation");
+    loading_screen?.animate([
+        { opacity: "1" },
+        { opacity: "0" },
+    ], { duration: 500, });
+    loading_screen?.style.setProperty("opacity", "0");
+    loading_screen?.addEventListener("animationiteration", () => loading_screen?.remove());
+});
