@@ -10,8 +10,8 @@ body {
     margin: 0;
 }
 
-/* styling of the <noscript> tag and its children */
-.noscript-msg {
+/* styling of the fullscreen-warning-messages (for no script/wasm support) */
+.fullscreen-warning-msg {
     position: absolute;
     top: 0;
     left: 0;
@@ -28,12 +28,16 @@ body {
     color: black;
 }
 
-.noscript-maintext {
+.fullscreen-warning-maintext {
     font-size: 1.5rem;
 }
 
-.noscript-subtext {
+.fullscreen-warning-subtext {
     font-size: 1rem;
+}
+
+#wasm-unsupported {
+    display: none;
 }
 
 /* the loading animation */
