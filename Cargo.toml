@@ -20,6 +20,7 @@ js-sys = "0.3"
 version = "0.3"
 features = [
   "CanvasRenderingContext2d",
+  "CssStyleDeclaration",
   "Document",
   "Element",
   "HtmlCanvasElement",

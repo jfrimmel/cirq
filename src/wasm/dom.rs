@@ -3,8 +3,10 @@
 //! This module, of course, can only be used on the "web" target and exposes the
 //! functions for creating and inserting the `<canvas>`-element as well as
 //! obtaining the rendering context.
+use std::str::FromStr;
+
 use wasm_bindgen::{prelude::Closure, JsCast};
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, Window};
 use web_sys::{ResizeObserver, ResizeObserverEntry, ResizeObserverSize};
 
 /// An error occurred, that prevents creating the canvas.
@@ -42,15 +44,9 @@ pub fn create_canvas() -> Result<HtmlCanvasElement, Error> {
         let canvas = canvas.clone();
         move |entries: js_sys::Array| {
             let entry: ResizeObserverEntry = entries.get(0).unchecked_into();
-            let size: ResizeObserverSize = entry
-                .device_pixel_content_box_size()
-                .get(0)
-                .unchecked_into();
-            let width = size.inline_size() as u32;
-            let height = size.block_size() as u32;
-
-            canvas.set_width(width);
-            canvas.set_height(height);
+            let size = Size::compute(&entry, &window, &canvas);
+            canvas.set_width(size.width);
+            canvas.set_height(size.height);
         }
     };
     let on_resize = Closure::<dyn Fn(_)>::new(on_resize);
@@ -60,6 +56,79 @@ pub fn create_canvas() -> Result<HtmlCanvasElement, Error> {
     body.append_child(&container)
         .expect("insertion should be valid");
     Ok(canvas)
+}
+
+/// Helper for correctly computing the size of the canvas (in all orientations).
+struct Size {
+    /// The computed actual width.
+    width: u32,
+    /// The computed actual height.
+    height: u32,
+}
+impl Size {
+    /// Compute the actual size of the `canvas` element with the information
+    /// obtained from the observer entry.
+    pub fn compute(
+        entry: &ResizeObserverEntry,
+        window: &Window,
+        canvas: &HtmlCanvasElement,
+    ) -> Self {
+        let (inline_size, block_size) = Self::raw_sizes(entry);
+        let (width, height) = match Self::orientation(window, canvas) {
+            Orientation::Horizontal => (inline_size, block_size),
+            Orientation::Vertical => (block_size, inline_size),
+        };
+        Self { width, height }
+    }
+
+    /// Returns the raw `inline` and `block` size.
+    fn raw_sizes(entry: &ResizeObserverEntry) -> (u32, u32) {
+        let size: ResizeObserverSize = entry
+            .device_pixel_content_box_size()
+            .get(0)
+            .unchecked_into();
+
+        // limit to the maximum canvas dimension on most browsers
+        let inline_size = (size.inline_size().round() as u32).min(32767);
+        let block_size = (size.block_size().round() as u32).min(32767);
+
+        (inline_size, block_size)
+    }
+
+    /// Check the orientation of the viewport.
+    fn orientation(window: &Window, canvas: &HtmlCanvasElement) -> Orientation {
+        // this is essentially a copy of what `winit` does internally
+        let writing_mode = window
+            .get_computed_style(canvas)
+            .expect("Failed to obtain computed style")
+            .unwrap()
+            .get_property_value("writing-mode")
+            .expect("`writing-mode` is a valid CSS property");
+
+        writing_mode.parse().unwrap_or_default()
+    }
+}
+
+/// The viewport orientation.
+#[derive(Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+enum Orientation {
+    #[default]
+    Horizontal,
+    Vertical,
+}
+impl FromStr for Orientation {
+    type Err = ();
+
+    /// Try to parse the `writing-mode` CSS property.
+    fn from_str(writing_mode: &str) -> Result<Self, Self::Err> {
+        if writing_mode.starts_with("vertical") || writing_mode.starts_with("sideways") {
+            Ok(Orientation::Vertical)
+        } else if writing_mode.starts_with("horizontal") {
+            Ok(Orientation::Horizontal)
+        } else {
+            Err(())
+        }
+    }
 }
 
 /// Obtain the rendering context of a given canvas.
