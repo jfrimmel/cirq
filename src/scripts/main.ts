@@ -26,4 +26,14 @@ init().then(() => {
     ], { duration: 500, });
     loading_screen?.style.setProperty("opacity", "0");
     loading_screen?.addEventListener("animationiteration", () => loading_screen?.remove());
+}).catch((e: any) => {
+    // the WASM file could not be initialized. This most likely is not caused by
+    // non-functioning WASM main(), but rather by a browser, that either does
+    // not support WebAssembly or has it disabled for security reasons.
+    console.error("could not initialize wasm due to " + e);
+    document.getElementById("loading-animation")?.remove();
+
+    // unhide the warning about unsupported WASM
+    const warning = document.getElementById("wasm-unsupported");
+    warning?.style?.setProperty("display", "initial");
 });

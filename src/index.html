@@ -18,18 +18,31 @@
         <span>loading...</span>
     </div>
     <noscript>
-        <div class="noscript-msg">
-            <img id="noscript-img" src="images/warning.svg" alt="warning icon" />
-            <p class="noscript-maintext">
-                This site is interactive and thus requires JavaScript to be enabled.
+        <div class="fullscreen-warning-msg">
+            <img src="images/warning.svg" alt="warning icon" />
+            <p class="fullscreen-warning-maintext">
+                Your Browser does not execute JavaScript.
             </p>
-            <p class="noscript-subtext">
+            <p class="fullscreen-warning-subtext">
+                This site is interactive and thus needs JavaScript enabled to be working.
                 Your client either has scripts disabled or does not support it.
                 Try to <a target="_blank" rel="noopener noreferrer" href="https://www.enable-javascript.com/">enable</a>
                 scripting.
             </p>
         </div>
     </noscript>
+    <div id="wasm-unsupported" class="fullscreen-warning-msg">
+        <img src="images/warning.svg" alt="warning icon" />
+        <p class="fullscreen-warning-maintext">
+            Your Browser does not support WebAssembly.
+        </p>
+        <p class="fullscreen-warning-subtext">
+            This site makes use of the so-called WebAssembly technology, which is a way to run code in your browser with
+            high performance.
+            Unfortunately, your client does not support it or has it disabled.
+            This may happen as a countermeasure against crypo-mining on websites.
+        </p>
+    </div>
     <script type="module" src="scripts/main.js"></script>
 </body>
 
