@@ -19,22 +19,15 @@ pub struct Error(()); // TODO: store the error causes for reporting
 pub fn create_canvas() -> Result<HtmlCanvasElement, Error> {
     let window = web_sys::window().ok_or(Error(()))?;
     let document = window.document().ok_or(Error(()))?;
-    let body = document.body().ok_or(Error(()))?;
 
     let canvas = document
-        .create_element("canvas")
-        .expect("<canvas> is a supported name")
+        .get_element_by_id("rendering-surface")
+        .ok_or(Error(()))?
         .dyn_into::<HtmlCanvasElement>()
-        .expect("<canvas> is convertible to `HtmlCanvasElement`");
+        .map_err(|_| Error(()))?;
 
     // put the canvas rendering surface into a container to allow styling it
-    let container = document
-        .create_element("div")
-        .expect("<div> is a supported name");
-    container.set_id("renderer");
-    container
-        .append_child(&canvas)
-        .expect("insertion should be valid");
+    let container = document.get_element_by_id("renderer").ok_or(Error(()))?;
 
     // make sure, that the canvas is resized, if the parent container has
     // changed dimensions. This way, the canvas gets resized which is internally
@@ -53,8 +46,6 @@ pub fn create_canvas() -> Result<HtmlCanvasElement, Error> {
     let observer = ResizeObserver::new(on_resize.into_js_value().unchecked_ref()).unwrap();
     observer.observe(&container);
 
-    body.append_child(&container)
-        .expect("insertion should be valid");
     Ok(canvas)
 }
 
