@@ -15,6 +15,19 @@ body {
     flex-flow: column;
 }
 
+header {
+    height: 1cm;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+header img {
+    height: 100%;
+    padding: 0.1cm;
+    box-sizing: border-box;
+}
+
 main {
     /* Fill remaining space of the (`display: flex`) parent */
     flex: 1 1 100%;
