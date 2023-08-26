@@ -10,8 +10,7 @@ self.addEventListener("install", async () => {
 });
 
 /** On a fetch, first look in cache and if missing call to network */
-self.addEventListener("fetch", (e: Event) => {
-    let event: FetchEvent = e as FetchEvent;
+self.addEventListener("fetch", event => {
     console.debug(`Trying to fetch ${event.request.url}...`);
 
     event.respondWith(fetch(event.request));
