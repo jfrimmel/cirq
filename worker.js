@@ -1,7 +1,3 @@
-/// <reference no-default-lib="true"/>
-/// <reference lib="esnext" />
-/// <reference lib="webworker" />
-'use strict';
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -11,13 +7,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+export default null;
+// #endregion
+'use strict';
 /** On install, try to cache all necessary resources */
 self.addEventListener("install", () => __awaiter(void 0, void 0, void 0, function* () {
     console.debug("Installing service worker...");
 }));
 /** On a fetch, first look in cache and if missing call to network */
-self.addEventListener("fetch", (e) => {
-    let event = e;
+self.addEventListener("fetch", event => {
     console.debug(`Trying to fetch ${event.request.url}...`);
     event.respondWith(fetch(event.request));
 });

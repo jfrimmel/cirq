@@ -1,5 +1,3 @@
-/// <reference lib="esnext" />
-/// <reference lib="dom" />
 'use strict';
 window.onload = () => {
     // if supported in the current browser (and mode), then register the service
