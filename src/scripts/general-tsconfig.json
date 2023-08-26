@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "rootDir": ".",
+        "outDir": "../../build/tsc",
+        "strict": true,
+        "composite": true
+    }
+}
