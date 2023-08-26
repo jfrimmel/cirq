@@ -1,10 +1,5 @@
 builddir = build
 site = $builddir/site
-jsoutdir = $site/scripts
-
-rule tsc
-    description = Compile $in to JavaScript
-    command = tsc --strict --pretty --target es6 --module es6 --outDir $jsoutdir $in
 
 rule cp
     description = Copy $in to build directory
@@ -18,7 +13,6 @@ rule svg2ico
     description = Render $in to .ico
     command = convert -background none -define 'icon:auto-resize=16,24,32,64,128,256' $in $out
 
-build $site/scripts/main.js: tsc src/scripts/main.ts
 build $site/index.html: cp src/index.html
 build $site/manifest.json: cp src/manifest.json
 build $site/css/style.css: cp src/css/style.css
@@ -32,9 +26,16 @@ build $site/icons/128px.png: svg2png icon.svg
 build $site/icons/64px.png: svg2png icon.svg
     size = 64
 build $site/favicon.ico: svg2ico icon.svg
-build $site/worker.js: tsc src/worker.ts
-    jsoutdir = $site
 build $site/images/warning.svg: cp src/images/warning.svg
+
+rule tsc
+    description = Compile TypeScript to JavaScript
+    command = tsc --build src/scripts/main
+
+tscdir = $builddir/tsc
+build $builddir/tsc/main/main.js $builddir/tsc/service-worker/worker.js: tsc src/scripts/main/main.ts src/scripts/service-worker/worker.ts | src/scripts/general-tsconfig.json src/scripts/main/tsconfig.json src/scripts/service-worker/tsconfig.json
+build $site/scripts/main.js: cp $builddir/tsc/main/main.js
+build $site/worker.js: cp $builddir/tsc/service-worker/worker.js
 
 rule cargo
     description = Compile Rust to WASM

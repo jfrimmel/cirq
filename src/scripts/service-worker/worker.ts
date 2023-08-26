@@ -1,6 +1,7 @@
-/// <reference no-default-lib="true"/>
-/// <reference lib="esnext" />
-/// <reference lib="webworker" />
+// #region typescript-workaround-for-service-worker-type
+declare var self: ServiceWorkerGlobalScope;
+export default null;
+// #endregion
 'use strict';
 
 /** On install, try to cache all necessary resources */
