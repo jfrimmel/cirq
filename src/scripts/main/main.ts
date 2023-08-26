@@ -10,8 +10,7 @@ window.onload = () => {
     }
 };
 
-// @ts-ignore
-import init, { } from "./wasm.js";
+import init from "wasm";
 
 init().then(() => {
     console.debug("Initialization done");
