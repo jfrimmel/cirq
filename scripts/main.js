@@ -8,8 +8,7 @@ window.onload = () => {
         navigator.serviceWorker.register('worker.js');
     }
 };
-// @ts-ignore
-import init from "./wasm.js";
+import init from './wasm.js';
 init().then(() => {
     console.debug("Initialization done");
     // fade the loading screen out
