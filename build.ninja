@@ -1,5 +1,7 @@
 builddir = build
 site = $builddir/site
+tscdir = $builddir/tsc
+wasmbindgendir = $builddir/wasm-bindgen
 
 rule cp
     description = Copy $in to build directory
@@ -33,7 +35,6 @@ rule tsc
     command = tsc --build src/scripts/main
     restat = true
 
-tscdir = $builddir/tsc
 build $builddir/tsc/main/main.js $builddir/tsc/service-worker/worker.js: tsc src/scripts/main/main.ts src/scripts/service-worker/worker.ts | src/scripts/general-tsconfig.json src/scripts/main/tsconfig.json src/scripts/service-worker/tsconfig.json
 build $site/scripts/main.js: cp $builddir/tsc/main/main.js
 build $site/worker.js: cp $builddir/tsc/service-worker/worker.js
@@ -46,7 +47,9 @@ rule cargo
 
 rule wasm-bindgen
     description = Generate WASM bindings
-    command = wasm-bindgen --target web --out-dir $site/scripts/ $in
+    command = wasm-bindgen --target web --out-dir $wasmbindgendir $in
 
 build $builddir/wasm32-unknown-unknown/release/wasm.wasm: cargo Cargo.toml
-build $site/scripts/wasm_bg.wasm $site/scripts/wasm_bg.wasm.d.ts $site/scripts/wasm.d.ts $site/scripts/wasm.js: wasm-bindgen $builddir/wasm32-unknown-unknown/release/wasm.wasm
+build $wasmbindgendir/wasm_bg.wasm $wasmbindgendir/wasm_bg.wasm.d.ts $wasmbindgendir/wasm.d.ts $wasmbindgendir/wasm.js: wasm-bindgen $builddir/wasm32-unknown-unknown/release/wasm.wasm
+build $site/scripts/wasm_bg.wasm: cp $wasmbindgendir/wasm_bg.wasm
+build $site/scripts/wasm.js: cp $wasmbindgendir/wasm.js
