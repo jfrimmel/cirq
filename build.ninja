@@ -45,9 +45,10 @@ build $site/worker.js: support-no-bundler $builddir/tsc/service-worker/worker.js
 
 rule cargo
     description = Compile Rust to WASM
-    command = cargo build --release --color=always --quiet && touch $out
+    command = cargo build --release --manifest-path $in --color=always --quiet
     depfile = $builddir/wasm32-unknown-unknown/release/wasm.d
     deps = gcc
+    restat = true
 
 rule wasm-bindgen
     description = Generate WASM bindings
