@@ -31,6 +31,7 @@ build $site/images/warning.svg: cp src/images/warning.svg
 rule tsc
     description = Compile TypeScript to JavaScript
     command = tsc --build src/scripts/main
+    restat = true
 
 tscdir = $builddir/tsc
 build $builddir/tsc/main/main.js $builddir/tsc/service-worker/worker.js: tsc src/scripts/main/main.ts src/scripts/service-worker/worker.ts | src/scripts/general-tsconfig.json src/scripts/main/tsconfig.json src/scripts/service-worker/tsconfig.json
