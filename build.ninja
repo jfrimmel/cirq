@@ -44,17 +44,19 @@ build $site/scripts/main.js: support-no-bundler $builddir/tsc/main/main.js
 build $site/worker.js: support-no-bundler $builddir/tsc/service-worker/worker.js
 
 rule cargo
-    description = Compile Rust to WASM
-    command = cargo build --release --manifest-path $in --color=always --quiet
-    depfile = $builddir/wasm32-unknown-unknown/release/wasm.d
+    description = Compile crate $crate to WASM
+    command = cargo build --release -p $crate --color=always --quiet
+    depfile = $builddir/wasm32-unknown-unknown/release/$crate.d
     deps = gcc
     restat = true
 
 rule wasm-bindgen
     description = Generate WASM bindings
-    command = wasm-bindgen --target web --out-dir $wasmbindgendir $in
+    command = wasm-bindgen --target $target --out-dir $wasmbindgendir $in
 
 build $builddir/wasm32-unknown-unknown/release/wasm.wasm: cargo Cargo.toml
+    crate = wasm
 build $wasmbindgendir/wasm_bg.wasm $wasmbindgendir/wasm_bg.wasm.d.ts $wasmbindgendir/wasm.d.ts $wasmbindgendir/wasm.js: wasm-bindgen $builddir/wasm32-unknown-unknown/release/wasm.wasm
+    target = web
 build $site/scripts/wasm_bg.wasm: cp $wasmbindgendir/wasm_bg.wasm
 build $site/scripts/wasm.js: cp $wasmbindgendir/wasm.js
