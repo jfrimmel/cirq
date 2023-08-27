@@ -3,7 +3,6 @@
 //! This script is merely a call to the WASM, that is the actual service worker.
 //! Any actual work is done over on the Rust side.
 importScripts("./service_worker.js");
-declare var wasm_bindgen: any;
 
 /// Initialize the WASM in the service worker.
 ///

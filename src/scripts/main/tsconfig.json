@@ -9,9 +9,4 @@
             "../../../build/wasm-bindgen",
         ]
     },
-    "references": [
-        {
-            "path": "../service-worker"
-        }
-    ]
 }
