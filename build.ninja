@@ -60,3 +60,10 @@ build $wasmbindgendir/app_bg.wasm $wasmbindgendir/app_bg.wasm.d.ts $wasmbindgend
     target = web
 build $site/scripts/app_bg.wasm: cp $wasmbindgendir/app_bg.wasm
 build $site/scripts/app.js: cp $wasmbindgendir/app.js
+
+build $builddir/wasm32-unknown-unknown/release/service_worker.wasm: cargo src/wasm/service_worker/Cargo.toml
+    crate = service_worker
+build $wasmbindgendir/service_worker_bg.wasm $wasmbindgendir/service_worker_bg.wasm.d.ts $wasmbindgendir/service_worker.d.ts $wasmbindgendir/service_worker.js: wasm-bindgen $builddir/wasm32-unknown-unknown/release/service_worker.wasm
+    target = no-modules
+build $site/service_worker_bg.wasm: cp $wasmbindgendir/service_worker_bg.wasm
+build $site/service_worker.js: cp $wasmbindgendir/service_worker.js
