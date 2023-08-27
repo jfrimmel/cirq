@@ -10,7 +10,7 @@ window.onload = () => {
     }
 };
 
-import init from "wasm";
+import init from "app";
 
 init().then(() => {
     console.debug("Initialization done");

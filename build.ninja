@@ -39,21 +39,31 @@ rule support-no-bundler
     description = Support runnin $in in browser
     command = sed -e "s@import \(.*\) from [\"']\(.*\)[\"']@import \1 from './\2.js'@" -e '/^export/d' $in > $out
 
-build $builddir/tsc/main/main.js $builddir/tsc/service-worker/worker.js: tsc src/scripts/main/main.ts src/scripts/service-worker/worker.ts | src/scripts/general-tsconfig.json src/scripts/main/tsconfig.json src/scripts/service-worker/tsconfig.json $wasmbindgendir/wasm.d.ts
+build $builddir/tsc/main/main.js: tsc src/scripts/main/main.ts | src/scripts/general-tsconfig.json src/scripts/main/tsconfig.json $wasmbindgendir/app.d.ts
 build $site/scripts/main.js: support-no-bundler $builddir/tsc/main/main.js
-build $site/worker.js: support-no-bundler $builddir/tsc/service-worker/worker.js
+build $site/worker.js: cp src/scripts/service-worker/worker.js
 
 rule cargo
-    description = Compile Rust to WASM
-    command = cargo build --release --color=always --quiet && touch $out
-    depfile = $builddir/wasm32-unknown-unknown/release/wasm.d
+    description = Compile crate $crate to WASM
+    command = cargo build --release -p $crate --color=always --quiet
+    depfile = $builddir/wasm32-unknown-unknown/release/$crate.d
     deps = gcc
+    restat = true
 
 rule wasm-bindgen
     description = Generate WASM bindings
-    command = wasm-bindgen --target web --out-dir $wasmbindgendir $in
+    command = wasm-bindgen --target $target --out-dir $wasmbindgendir $in
 
-build $builddir/wasm32-unknown-unknown/release/wasm.wasm: cargo Cargo.toml
-build $wasmbindgendir/wasm_bg.wasm $wasmbindgendir/wasm_bg.wasm.d.ts $wasmbindgendir/wasm.d.ts $wasmbindgendir/wasm.js: wasm-bindgen $builddir/wasm32-unknown-unknown/release/wasm.wasm
-build $site/scripts/wasm_bg.wasm: cp $wasmbindgendir/wasm_bg.wasm
-build $site/scripts/wasm.js: cp $wasmbindgendir/wasm.js
+build $builddir/wasm32-unknown-unknown/release/app.wasm: cargo Cargo.toml
+    crate = app
+build $wasmbindgendir/app_bg.wasm $wasmbindgendir/app_bg.wasm.d.ts $wasmbindgendir/app.d.ts $wasmbindgendir/app.js: wasm-bindgen $builddir/wasm32-unknown-unknown/release/app.wasm
+    target = web
+build $site/scripts/app_bg.wasm: cp $wasmbindgendir/app_bg.wasm
+build $site/scripts/app.js: cp $wasmbindgendir/app.js
+
+build $builddir/wasm32-unknown-unknown/release/service_worker.wasm: cargo src/wasm/service_worker/Cargo.toml
+    crate = service_worker
+build $wasmbindgendir/service_worker_bg.wasm $wasmbindgendir/service_worker_bg.wasm.d.ts $wasmbindgendir/service_worker.d.ts $wasmbindgendir/service_worker.js: wasm-bindgen $builddir/wasm32-unknown-unknown/release/service_worker.wasm
+    target = no-modules
+build $site/service_worker_bg.wasm: cp $wasmbindgendir/service_worker_bg.wasm
+build $site/service_worker.js: cp $wasmbindgendir/service_worker.js
