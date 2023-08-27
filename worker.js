@@ -1,20 +1,18 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-// #endregion
-'use strict';
-/** On install, try to cache all necessary resources */
-self.addEventListener("install", () => __awaiter(void 0, void 0, void 0, function* () {
-    console.debug("Installing service worker...");
-}));
-/** On a fetch, first look in cache and if missing call to network */
-self.addEventListener("fetch", event => {
-    console.debug(`Trying to fetch ${event.request.url}...`);
-    event.respondWith(fetch(event.request));
-});
+//! Entry point of the service worker, that powers the offline usage of the PWA.
+//!
+//! This script is merely a call to the WASM, that is the actual service worker.
+//! Any actual work is done over on the Rust side.
+importScripts("./service_worker.js");
+
+/// Initialize the WASM in the service worker.
+///
+/// This function re-initializes the WASM despite it being loaded already before
+/// running this script. This is required, as the service worker runs in a
+/// different context.
+async function initialize() {
+    console.debug("[service worker] trying to load WASM...");
+    await wasm_bindgen("./service_worker_bg.wasm");
+
+    wasm_bindgen.initialize();
+}
+initialize();
