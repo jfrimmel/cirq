@@ -36,7 +36,7 @@ rule tsc
     restat = true
 
 rule support-no-bundler
-    description = Support runnin $in in browser
+    description = Support running $in in browser
     command = sed -e "s@import \(.*\) from [\"']\(.*\)[\"']@import \1 from './\2.js'@" -e '/^export/d' $in > $out
 
 build build $builddir/tsc/main/main.js $builddir/tsc/main/tsconfig.tsbuildinfo $builddir/tsc/service-worker/worker.js $builddir/tsc/service-worker/tsconfig.tsbuildinfo: tsc src/scripts/main/main.ts src/scripts/service-worker/worker.ts | src/scripts/general-tsconfig.json src/scripts/main/tsconfig.json src/scripts/service-worker/tsconfig.json $wasmbindgendir/app.d.ts $wasmbindgendir/service_worker.d.ts
