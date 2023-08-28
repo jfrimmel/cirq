@@ -32,14 +32,14 @@ build $site/images/warning.svg: cp src/images/warning.svg
 
 rule tsc
     description = Compile TypeScript to JavaScript
-    command = tsc --build src/scripts/main
+    command = tsc --build --force src/scripts/main
     restat = true
 
 rule support-no-bundler
-    description = Support runnin $in in browser
+    description = Support running $in in browser
     command = sed -e "s@import \(.*\) from [\"']\(.*\)[\"']@import \1 from './\2.js'@" -e '/^export/d' $in > $out
 
-build $builddir/tsc/main/main.js $builddir/tsc/service-worker/worker.js: tsc src/scripts/main/main.ts src/scripts/service-worker/worker.ts | src/scripts/general-tsconfig.json src/scripts/main/tsconfig.json src/scripts/service-worker/tsconfig.json $wasmbindgendir/app.d.ts
+build build $builddir/tsc/main/main.js $builddir/tsc/main/tsconfig.tsbuildinfo $builddir/tsc/service-worker/worker.js $builddir/tsc/service-worker/tsconfig.tsbuildinfo: tsc src/scripts/main/main.ts src/scripts/service-worker/worker.ts | src/scripts/general-tsconfig.json src/scripts/main/tsconfig.json src/scripts/service-worker/tsconfig.json $wasmbindgendir/app.d.ts $wasmbindgendir/service_worker.d.ts
 build $site/scripts/main.js: support-no-bundler $builddir/tsc/main/main.js
 build $site/worker.js: support-no-bundler $builddir/tsc/service-worker/worker.js
 
