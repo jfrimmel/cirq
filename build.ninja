@@ -32,7 +32,7 @@ build $site/images/warning.svg: cp src/images/warning.svg
 
 rule tsc
     description = Compile TypeScript to JavaScript
-    command = tsc --build src/scripts/main
+    command = tsc --build --force src/scripts/main
     restat = true
 
 rule support-no-bundler
