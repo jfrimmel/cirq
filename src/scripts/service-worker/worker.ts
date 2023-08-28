@@ -2,7 +2,13 @@
 //!
 //! This script is merely a call to the WASM, that is the actual service worker.
 //! Any actual work is done over on the Rust side.
-importScripts("./service_worker.js");
+'use strict';
+import * as wasm from "service_worker";
+
+// #region typescript-workaround-for-service-worker-type
+declare var self: ServiceWorkerGlobalScope;
+export default null;
+// #endregion
 
 /// Initialize the WASM in the service worker.
 ///
@@ -11,8 +17,7 @@ importScripts("./service_worker.js");
 /// different context.
 async function initialize() {
     console.debug("[service worker] trying to load WASM...");
-    await wasm_bindgen("./service_worker_bg.wasm");
-
-    wasm_bindgen.initialize();
+    await wasm.default();
+    wasm.initialize();
 }
 initialize();

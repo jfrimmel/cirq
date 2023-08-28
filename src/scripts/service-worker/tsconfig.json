@@ -2,16 +2,11 @@
     "extends": "../general-tsconfig.json",
     "compilerOptions": {
         "lib": [
-            "es6",
-            "dom"
+            "esnext",
+            "webworker"
         ],
         "typeRoots": [
             "../../../build/wasm-bindgen",
-        ]
-    },
-    "references": [
-        {
-            "path": "../service-worker"
-        }
-    ]
+        ],
+    }
 }
