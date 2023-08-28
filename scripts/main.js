@@ -5,7 +5,7 @@ window.onload = () => {
     // e.g. it simply does not support PWAs or it runs in private mode or the
     // connection to the site is untrusted/unencrypted.
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('worker.js');
+        navigator.serviceWorker.register('worker.js', { type: 'module' });
     }
 };
 import init from './app.js';
