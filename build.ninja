@@ -3,6 +3,12 @@ site = $builddir/site
 tscdir = $builddir/tsc
 wasmbindgendir = $builddir/wasm-bindgen
 
+rule generate-version
+    description = Generate version info file
+    command = git rev-list --count HEAD > $out
+
+build $site/.version: generate-version .git/index
+
 rule cp
     description = Copy $in to build directory
     command = cp $in $out
