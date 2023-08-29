@@ -1,5 +1,5 @@
 [workspace]
-members = ["src/wasm/app", "src/wasm/service_worker"]
+members = ["src/wasm/app"]
 
 [profile.release]
 opt-level = "s"
