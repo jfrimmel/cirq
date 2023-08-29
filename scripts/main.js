@@ -13,12 +13,12 @@ init().then(() => {
     console.debug("Initialization done");
     // fade the loading screen out
     const loading_screen = document.getElementById("loading-animation");
-    loading_screen === null || loading_screen === void 0 ? void 0 : loading_screen.animate([
+    const animation = loading_screen === null || loading_screen === void 0 ? void 0 : loading_screen.animate([
         { opacity: "1" },
         { opacity: "0" },
     ], { duration: 500, });
-    loading_screen === null || loading_screen === void 0 ? void 0 : loading_screen.style.setProperty("opacity", "0");
-    loading_screen === null || loading_screen === void 0 ? void 0 : loading_screen.addEventListener("animationiteration", () => loading_screen === null || loading_screen === void 0 ? void 0 : loading_screen.remove());
+    animation === null || animation === void 0 ? void 0 : animation.addEventListener("finish", () => loading_screen === null || loading_screen === void 0 ? void 0 : loading_screen.remove());
+    animation === null || animation === void 0 ? void 0 : animation.play();
 }).catch((e) => {
     var _a, _b;
     // the WASM file could not be initialized. This most likely is not caused by
