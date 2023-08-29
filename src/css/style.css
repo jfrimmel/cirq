@@ -25,7 +25,7 @@ header {
     left: env(titlebar-area-x, 0);
     top: env(titlebar-area-y, 0);
     width: env(titlebar-area-width, 100%);
-    height: max(env(titlebar-area-height), 1cm);
+    height: max(env(titlebar-area-height), 4em);
     -webkit-app-region: drag;
 }
 
