@@ -51,6 +51,46 @@ declare var self: ServiceWorkerGlobalScope;
 export default null;
 // #endregion
 
+/** A sentinel for checking for an available update of the PWA. */
+class UpdateService {
+    /** Will eventually hold the PWA version at the time of construction. */
+    private installed_version: Promise<number>;
+
+    /** Create a new UpdateService with the current server version as basis. */
+    public constructor() {
+        this.installed_version = this.fetch_version().catch(_ => 0);
+    }
+
+    /**
+     * Check, if there is an update available.
+     * @returns `true` if the current server version is newer than the version
+     * when creating this update service (e.g. on installing the service worker)
+     */
+    public async is_update_available(): Promise<boolean> {
+        try {
+            const current = await this.installed_version;
+            const potentially_new = await this.fetch_version();
+            return potentially_new > current;
+        } catch (e) { return false; }
+    }
+
+    /**
+     * Query the current version on the server and return its numeric value.
+     * @returns The eventually resolved content of the `./.version`-file.
+     */
+    private async fetch_version(): Promise<number> {
+        if (!navigator.onLine) throw new Error("offline");
+        const response = await fetch('./.version');
+        if (!response.ok) throw new Error(response.statusText);
+        const version = parseInt(await response.text());
+        console.debug("[service worker] current server version", version);
+        return version;
+    }
+}
+
+/** A service checking for updates compared to version at installation time. */
+const update_service = new UpdateService();
+
 async function on_install() {
     console.log("[service worker] Installing service worker");
 }
