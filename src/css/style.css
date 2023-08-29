@@ -29,6 +29,32 @@ header {
     -webkit-app-region: drag;
 }
 
+header input[type="search"] {
+    background-color: #3B3E44;
+    color: white;
+    padding: 4px;
+    border: 1px solid white;
+    border-radius: 0.125cm;
+
+    flex-grow: 1;
+    max-width: 10cm;
+    margin: 0 auto;
+    /* no not drag the window if the user wants to click inside the search bar*/
+    -webkit-app-region: no-drag;
+}
+
+header input[type="search"]:focus {
+    background-color: white;
+    color: #3B3E44;
+    outline: none;
+    border-color: #3B3E44;
+}
+
+header input[type="search"]::placeholder {
+    color: lightgray;
+    text-align: center;
+}
+
 header img {
     height: 0.8cm;
     padding: 0.1cm;
