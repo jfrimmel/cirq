@@ -2,8 +2,11 @@
     "name": "cirq",
     "start_url": ".",
     "display": "standalone",
+    "display_override": [
+        "window-controls-overlay"
+    ],
     "background_color": "#3B3E44",
-    "theme_color": "#22be22",
+    "theme_color": "#3B3E44",
     "icons": [
         {
             "src": "icons/icon.svg",
