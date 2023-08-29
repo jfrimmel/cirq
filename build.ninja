@@ -60,3 +60,9 @@ build $wasmbindgendir/app_bg.wasm $wasmbindgendir/app_bg.wasm.d.ts $wasmbindgend
     target = web
 build $site/scripts/app_bg.wasm: cp $wasmbindgendir/app_bg.wasm
 build $site/scripts/app.js: cp $wasmbindgendir/app.js
+
+rule generate-version
+    description = Generate version info file
+    command = git rev-list --count HEAD > $out
+
+build $site/.version: generate-version .git/index
