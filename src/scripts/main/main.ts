@@ -17,12 +17,12 @@ init().then(() => {
 
     // fade the loading screen out
     const loading_screen = document.getElementById("loading-animation");
-    loading_screen?.animate([
+    const animation = loading_screen?.animate([
         { opacity: "1" },
         { opacity: "0" },
     ], { duration: 500, });
-    loading_screen?.style.setProperty("opacity", "0");
-    loading_screen?.addEventListener("animationiteration", () => loading_screen?.remove());
+    animation?.addEventListener("finish", () => loading_screen?.remove());
+    animation?.play();
 }).catch((e: any) => {
     // the WASM file could not be initialized. This most likely is not caused by
     // non-functioning WASM main(), but rather by a browser, that either does
