@@ -37,8 +37,8 @@ header input[type="search"] {
     border-radius: 0.125cm;
 
     flex-grow: 1;
-    max-width: 10cm;
-    margin: 0 auto;
+    margin-left: 1cm;
+    margin-right: 0.5cm;
     /* no not drag the window if the user wants to click inside the search bar*/
     -webkit-app-region: no-drag;
 }
