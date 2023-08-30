@@ -91,19 +91,78 @@ class UpdateService {
 /** A service checking for updates compared to version at installation time. */
 const update_service = new UpdateService();
 
-async function on_install() {
-    console.log("[service worker] Installing service worker");
+/**
+ * The cached site for full offline-support.
+ *
+ * This class represents the whole PWA (all of its files) of a specific version,
+ * which can be populated once (e.g. at the service worker installation) and
+ * potentially update later on. All the site assets, i.e. all HTML, CSS, JS,
+ * etc., are cached. On a lookup of a specific request, only the cached versions
+ * are considered: this implements the cache-only-strategy.
+ */
+class OfflineSite {
+    private cache: Promise<Cache>;
+    private version: number;
+    /** List all assets to cache */
+    private readonly static_files: string[] = [
+        "/", // make sure to include the `/` as this is most likely used.
+        "css/style.css",
+        "favicon.ico",
+        "icons/128px.png",
+        "icons/256px.png",
+        "icons/512px.png",
+        "icons/64px.png",
+        "icons/icon.svg",
+        "images/warning.svg",
+        "index.html",
+        "manifest.json",
+        "scripts/app_bg.wasm",
+        "scripts/app.js",
+        "scripts/main.js",
+        ".version",
+        //"./worker.js",
+    ];
+
+    /** Create a new offline-site-storage without populating anything */
+    constructor() {
+        this.version = 1;
+        this.cache = caches.open(`cirq-${this.version}`);
+    }
+
+    /** Populate the cache (should be done only once). */
+    public async populate() {
+        const cache = await this.cache;
+        await cache.addAll(this.static_files);
+    }
+
+    /**
+     * Lookup a specific request in the offline cache.
+     * 
+     * This lookup is only done in the cache and is never attempted on the
+     * network. Files not present in the cache are responded with an error 404.
+     */
+    public async lookup(request: Request): Promise<Response> {
+        const cache = await this.cache;
+        const response = await cache.match(request);
+        console.debug("looking for", request.url, ", found", response?.url);
+        if (response !== undefined) return response;
+        return new Response("Cannot find resource", { status: 404 });
+    }
 }
 
-async function on_activate() {
-    console.log("[service worker] Activating service worker");
+/** The cached site assets for offline use. */
+const offline_site = new OfflineSite();
+
+async function on_install() {
+    console.log("[service worker] Installing service worker");
+    offline_site.populate();
+    self.skipWaiting();
 }
 
 async function on_fetch(request: Request): Promise<Response> {
     console.debug("[service worker] Trying to fetch ", request.url);
-    return await fetch(request);
+    return await offline_site.lookup(request);
 }
 
 self.addEventListener("install", event => event.waitUntil(on_install()));
-self.addEventListener("activate", event => event.waitUntil(on_activate()));
-self.addEventListener("fetch", event => event.waitUntil(on_fetch(event.request)));
+self.addEventListener("fetch", event => event.respondWith(on_fetch(event.request)));
