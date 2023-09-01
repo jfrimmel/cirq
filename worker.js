@@ -12,18 +12,13 @@
 //! and won't communicate to any server.
 //!
 //! # Updates
-//! The only exception to this is the searching for updates once in a while. If
-//! the worker should search for an update (e.g. because the update interval has
-//! ended), the worker will contact the PWA-server and check, if there is a new
-//! version of the application (if the device is currently offline, this is fine
-//! and just nothing happens). If there is a newer version available, the
-//! resources are downloaded automatically and stored in a newer cache version,
-//! while keeping the current version active. Only if the page is reloaded by
-//! the user, the newer versions of the resources are used.
-//!
-//! The user should actively decide to update the page, e.g. by clicking on a
-//! button, that only is visible if there is an update (this needs to be
-//! communicated by the service worker to the actual PWA).
+//! The update procedure is very simple: the service worker source file changes
+//! on any release (thanks to the monotonically increasing version number, that
+//! is inserted at build time), which causes the browser to install a new ver-
+//! sion of the service worker. On installation, this new service worker will
+//! fetch all the resources of the current PWA version. This way a new version
+//! is automatically installed on every new version on the server. The user can
+//! then be notified to reload the site to switch to the new worker.
 //!
 //! # Script vs WASM
 //! In a perfect world, this would just forward to a WASM as well, but this is
@@ -33,7 +28,7 @@
 //!   doing it altogether.
 //! * TypeScript only plays nice with modules, but [at the moment], Firefox does
 //!   not support service workers as modules, as this feature is experimental.
-//!   Therefore one cannot do simply `import * as wasm from './service_worker.js'` to
+//!   Therefore one cannot do simply `import * as wasm from "service_worker"` to
 //!   get the WASM code loaded. The alternative is to use `importScripts()`, but
 //!   then the type annotations are missing for TypeScript. Dynamic imports are
 //!   forbidden by the specification altogether.
@@ -54,23 +49,103 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+/** The version of this PWA build. */
+// `108` is replaced at build time with the actual version
+const VERSION = "v108";
+const CACHE_NAME = `cirq-${VERSION}`;
+/**
+ * The list of files to cache.
+ *
+ * This list must include all static files except for the server version. Note,
+ * that this list must also include all names to all files, e.g. often `/` is
+ * an alternative name for `/index.html`, so both must be in the list. This list
+ * can be generated automatically using the following pipeline:
+ * ```bash
+ * find build/site/ -type f |
+ *     sort |
+ *     grep -v 'build/site/worker.js' |
+ *     sed -e 's@build/site/\(.*\)@"\1",@' -e '1i"/",'`
+ * ```
+ * Do not include the service worker file itself, as this prevents PWA updates.
+ */
+const SITE_RESOURCES = [
+    "/",
+    "css/style.css",
+    "favicon.ico",
+    "icons/128px.png",
+    "icons/256px.png",
+    "icons/512px.png",
+    "icons/64px.png",
+    "icons/icon.svg",
+    "images/warning.svg",
+    "index.html",
+    "manifest.json",
+    "scripts/app_bg.wasm",
+    "scripts/app.js",
+    "scripts/main.js",
+    ".version",
+];
 // #endregion
+/** Cache all static files on installation or prevent the install on errors */
 function on_install() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("[service worker] Installing service worker");
+        const cache = yield caches.open(CACHE_NAME);
+        try {
+            yield cache.addAll(SITE_RESOURCES);
+        }
+        catch (e) {
+            // when this happens, the static file list is out of date and must be
+            // regenerated or there was another issue receiving one or more files,
+            // e.g. the network was disconnected just as the `addAll()`-call is on-
+            // going.
+            console.warn("Static file list out of date or other network error:", e);
+            throw e; // rethrow in order to prevent the service worker installation
+        }
     });
 }
+/** Delete all older caches in order to save disk-space and claim all clients */
 function on_activate() {
     return __awaiter(this, void 0, void 0, function* () {
         console.log("[service worker] Activating service worker");
+        // delete all other caches
+        const names = yield caches.keys();
+        const deletions = names
+            .filter(name => name != CACHE_NAME)
+            .map(name => caches.delete(name));
+        yield Promise.all(deletions);
+        // use this service worker for all clients
+        yield self.clients.claim();
     });
 }
+/** Look up the requests in the cache or return 404 if the file is not cached */
 function on_fetch(request) {
     return __awaiter(this, void 0, void 0, function* () {
         console.debug("[service worker] Trying to fetch ", request.url);
-        return yield fetch(request);
+        const cache = yield caches.open(CACHE_NAME);
+        const response = yield cache.match(request);
+        if (response)
+            return response;
+        else
+            return new Response("file not cached", { status: 404 });
+    });
+}
+/** Handle messages from clients, e.g. to reload the worker and application */
+function on_message(event) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        if (event.data === "perform-update") {
+            console.debug("[service worker] skipping the waiting of the new one");
+            yield self.skipWaiting();
+            yield self.clients.claim();
+            (_a = event.source) === null || _a === void 0 ? void 0 : _a.postMessage("done");
+        }
+        else {
+            console.warn("unknown message: ", event.data, "@", event);
+        }
     });
 }
 self.addEventListener("install", event => event.waitUntil(on_install()));
 self.addEventListener("activate", event => event.waitUntil(on_activate()));
-self.addEventListener("fetch", event => event.waitUntil(on_fetch(event.request)));
+self.addEventListener("fetch", event => event.respondWith(on_fetch(event.request)));
+self.addEventListener("message", event => event.waitUntil(on_message(event)));
