@@ -49,6 +49,16 @@
 // #region typescript-workaround-for-service-worker-type
 declare var self: ServiceWorkerGlobalScope;
 export default null;
+
+declare global {
+    interface PeriodicSyncEvent extends ExtendableEvent {
+        readonly tag: string;
+    }
+
+    interface ServiceWorkerGlobalScopeEventMap {
+        periodicsync: PeriodicSyncEvent;
+    }
+}
 // #endregion
 
 /** A sentinel for checking for an available update of the PWA. */
@@ -118,6 +128,7 @@ class OfflineSite {
         "manifest.json",
         "scripts/app_bg.wasm",
         "scripts/app.js",
+        "scripts/worker-interface.js",
         "scripts/main.js",
         ".version",
         //"./worker.js",
@@ -166,3 +177,19 @@ async function on_fetch(request: Request): Promise<Response> {
 
 self.addEventListener("install", event => event.waitUntil(on_install()));
 self.addEventListener("fetch", event => event.respondWith(on_fetch(event.request)));
+self.addEventListener("periodicsync", event => event.waitUntil(async function () {
+    if (event.tag == "update-check") {
+        console.debug("[service worker] received periodic update request");
+        // TODO: handle
+    } else {
+        console.warn("[service worker] unknown periodic sync event:", event.tag);
+    }
+}()));
+self.addEventListener("message", event => event.waitUntil(async function () {
+    if (event.data == "update-check") {
+        console.debug("[service worker] received fallback update request");
+        // TODO: handle
+    } else {
+        console.warn("[service worker] unknown message event:", event.data);
+    }
+}()));

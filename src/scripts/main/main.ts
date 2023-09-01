@@ -1,12 +1,13 @@
 'use strict';
 
-window.onload = () => {
-    // if supported in the current browser (and mode), then register the service
-    // worker for the PWA. A browser might not support this for various reasons,
-    // e.g. it simply does not support PWAs or it runs in private mode or the
-    // connection to the site is untrusted/unencrypted.
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('worker.js');
+import { WorkerInterface, ServiceWorkerUnsupported } from "./worker-interface";
+
+window.onload = async () => {
+    try {
+        const worker = new WorkerInterface("worker.js");
+        await worker.enable_update_check();
+    } catch (e) {
+        console.error("Service worker could not be configured", e);
     }
 };
 
