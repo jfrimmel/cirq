@@ -5,7 +5,7 @@ wasmbindgendir = $builddir/wasm-bindgen
 
 rule generate-version
     description = Generate version info file
-    command = git rev-list --count HEAD > $out
+    command = git rev-list --count --merges HEAD > $out
 
 build $site/.version: generate-version .git/index
 
