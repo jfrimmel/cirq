@@ -85,6 +85,16 @@ class UpdateService {
     }
 
     /**
+     * Update the installed version to the given one. This must only be called
+     * if there was actually an update done to the PWA (at least to the cached
+     * resources).
+     * @param version The version number of the applied update.
+     */
+    public async mark_as_updated_to(version: number) {
+        this.installed_version = new Promise((ok, _) => ok(version));
+    }
+
+    /**
      * Query the current version on the server and return its numeric value.
      * @returns The eventually resolved content of the `./.version`-file.
      */
@@ -159,6 +169,35 @@ class OfflineSite {
         if (response !== undefined) return response;
         return new Response("Cannot find resource", { status: 404 });
     }
+
+    /**
+     * Try to update all site assets.
+     *
+     * This will try to fetch all the resources on the server and, if all are
+     * available, will replace the old files with the newly fetched ones. Errors
+     * are ignored and lead to the update to not be applied at all.
+     * @returns The version number of the new update, if it was successfully or 
+     * `undefined` if the update failed.
+     */
+    public async update(): Promise<number | undefined> {
+        this.version++;
+        const cache = await caches.open(`cirq-${this.version}`);
+        try {
+            // NOTE: this will not work if a file is added or removed!
+            await cache.addAll(this.static_files);
+            // at this point, the new cache is fully populated and the old one
+            // can be removed.
+            const old = await this.cache;
+            const entries = await old.keys();
+            entries.forEach(async entry => await old.delete(entry));
+            // drop the old one and use the new one
+            this.cache = new Promise((ok, _) => ok(cache));
+            return this.version;
+        } catch (e) {
+            /* ignore failures, just don't update */
+            return undefined;
+        }
+    }
 }
 
 /** The cached site assets for offline use. */
@@ -175,12 +214,22 @@ async function on_fetch(request: Request): Promise<Response> {
     return await offline_site.lookup(request);
 }
 
+async function check_for_updates() {
+    if (await update_service.is_update_available()) {
+        console.log("[service worker] an update is available");
+
+        const new_version = await offline_site.update();
+        if (new_version)
+            update_service.mark_as_updated_to(new_version);
+    }
+}
+
 self.addEventListener("install", event => event.waitUntil(on_install()));
 self.addEventListener("fetch", event => event.respondWith(on_fetch(event.request)));
 self.addEventListener("periodicsync", event => event.waitUntil(async function () {
     if (event.tag == "update-check") {
         console.debug("[service worker] received periodic update request");
-        // TODO: handle
+        await check_for_updates();
     } else {
         console.warn("[service worker] unknown periodic sync event:", event.tag);
     }
@@ -188,7 +237,7 @@ self.addEventListener("periodicsync", event => event.waitUntil(async function ()
 self.addEventListener("message", event => event.waitUntil(async function () {
     if (event.data == "update-check") {
         console.debug("[service worker] received fallback update request");
-        // TODO: handle
+        await check_for_updates();
     } else {
         console.warn("[service worker] unknown message event:", event.data);
     }
