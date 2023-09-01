@@ -44,6 +44,7 @@
 /** The version of this PWA build. */
 // `$version` is replaced at build time with the actual version
 const VERSION = "v$version";
+const CACHE_NAME = `cirq-${VERSION}`;
 
 /**
  * The list of files to cache.
@@ -83,19 +84,47 @@ declare var self: ServiceWorkerGlobalScope;
 export default null;
 // #endregion
 
+/** Cache all static files on installation or prevent the install on errors */
 async function on_install() {
     console.log("[service worker] Installing service worker");
+    const cache = await caches.open(CACHE_NAME);
+    try {
+        await cache.addAll(SITE_RESOURCES);
+    } catch (e) {
+        // when this happens, the static file list is out of date and must be
+        // regenerated or there was another issue receiving one or more files,
+        // e.g. the network was disconnected just as the `addAll()`-call is on-
+        // going.
+        console.warn("Static file list out of date or other network error:", e);
+        throw e; // rethrow in order to prevent the service worker installation
+    }
 }
 
+/** Delete all older caches in order to save disk-space and claim all clients */
 async function on_activate() {
     console.log("[service worker] Activating service worker");
+
+    // delete all other caches
+    const names = await caches.keys();
+    const deletions = names
+        .filter(name => name != CACHE_NAME)
+        .map(name => caches.delete(name));
+    await Promise.all(deletions);
+
+    // use this service worker for all clients
+    await self.clients.claim();
 }
 
+/** Look up the requests in the cache or return 404 if the file is not cached */
 async function on_fetch(request: Request): Promise<Response> {
     console.debug("[service worker] Trying to fetch ", request.url);
-    return await fetch(request);
+
+    const cache = await caches.open(CACHE_NAME);
+    const response = await cache.match(request);
+    if (response) return response;
+    else return new Response("file not cached", { status: 404 });
 }
 
 self.addEventListener("install", event => event.waitUntil(on_install()));
 self.addEventListener("activate", event => event.waitUntil(on_activate()));
-self.addEventListener("fetch", event => event.waitUntil(on_fetch(event.request)));
+self.addEventListener("fetch", event => event.respondWith(on_fetch(event.request)));
