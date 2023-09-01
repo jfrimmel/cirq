@@ -37,11 +37,12 @@ rule tsc
 
 rule support-no-bundler
     description = Support running $in in browser
-    command = sed -e "s@import \(.*\) from [\"']\(.*\)[\"']@import \1 from './\2.js'@" -e '/^export/d' $in > $out
+    command = sed -e "s@import \(.*\) from [\"']\(.*\)[\"']@import \1 from './\2.js'@" $parameter $in > $out
 
 build build $builddir/tsc/main/main.js $builddir/tsc/main/tsconfig.tsbuildinfo $builddir/tsc/service-worker/worker.js $builddir/tsc/service-worker/tsconfig.tsbuildinfo: tsc src/scripts/main/main.ts src/scripts/service-worker/worker.ts | src/scripts/general-tsconfig.json src/scripts/main/tsconfig.json src/scripts/service-worker/tsconfig.json $wasmbindgendir/app.d.ts
 build $site/scripts/main.js: support-no-bundler $builddir/tsc/main/main.js
 build $site/worker.js: support-no-bundler $builddir/tsc/service-worker/worker.js
+    parameter = -e '/^export default/d'
 
 rule cargo
     description = Compile crate $crate to WASM
