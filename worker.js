@@ -50,8 +50,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 /** The version of this PWA build. */
-// `108` is replaced at build time with the actual version
-const VERSION = "v108";
+// `31` is replaced at build time with the actual version
+const VERSION = "v31";
 const CACHE_NAME = `cirq-${VERSION}`;
 /**
  * The list of files to cache.

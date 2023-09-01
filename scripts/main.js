@@ -65,6 +65,11 @@ window.onload = () => __awaiter(void 0, void 0, void 0, function* () {
             });
         };
     }
+    const version = yield fetch(".version");
+    const text = yield version.text();
+    const node = document.getElementById("version");
+    if (node)
+        node.textContent = "alpha-" + text;
 });
 import init from './app.js';
 init().then(() => {
