@@ -12,18 +12,13 @@
 //! and won't communicate to any server.
 //!
 //! # Updates
-//! The only exception to this is the searching for updates once in a while. If
-//! the worker should search for an update (e.g. because the update interval has
-//! ended), the worker will contact the PWA-server and check, if there is a new
-//! version of the application (if the device is currently offline, this is fine
-//! and just nothing happens). If there is a newer version available, the
-//! resources are downloaded automatically and stored in a newer cache version,
-//! while keeping the current version active. Only if the page is reloaded by
-//! the user, the newer versions of the resources are used.
-//!
-//! The user should actively decide to update the page, e.g. by clicking on a
-//! button, that only is visible if there is an update (this needs to be
-//! communicated by the service worker to the actual PWA).
+//! The update procedure is very simple: the service worker source file changes
+//! on any release (thanks to the monotonically increasing version number, that
+//! is inserted at build time), which causes the browser to install a new ver-
+//! sion of the service worker. On installation, this new service worker will
+//! fetch all the resources of the current PWA version. This way a new version
+//! is automatically installed on every new version on the server. The user can
+//! then be notified to reload the site to switch to the new worker.
 //!
 //! # Script vs WASM
 //! In a perfect world, this would just forward to a WASM as well, but this is
@@ -45,6 +40,10 @@
 //!
 //! [at the moment]: https://caniuse.com/mdn-api_serviceworker_ecmascript_modules
 'use strict';
+
+/** The version of this PWA build. */
+// `$version` is replaced at build time with the actual version
+const VERSION = "v$version";
 
 // #region typescript-workaround-for-service-worker-type
 declare var self: ServiceWorkerGlobalScope;
