@@ -57,6 +57,11 @@ window.onload = async () => {
         }
 
     }
+
+    const version = await fetch(".version");
+    const text = await version.text();
+    const node = document.getElementById("version");
+    if (node) node.textContent = "alpha-" + text;
 };
 
 import init from "app";
