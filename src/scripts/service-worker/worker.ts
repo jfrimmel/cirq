@@ -45,6 +45,39 @@
 // `$version` is replaced at build time with the actual version
 const VERSION = "v$version";
 
+/**
+ * The list of files to cache.
+ *
+ * This list must include all static files except for the server version. Note,
+ * that this list must also include all names to all files, e.g. often `/` is
+ * an alternative name for `/index.html`, so both must be in the list. This list
+ * can be generated automatically using the following pipeline:
+ * ```bash
+ * find build/site/ -type f |
+ *     sort |
+ *     grep -v 'build/site/worker.js' |
+ *     sed -e 's@build/site/\(.*\)@"\1",@' -e '1i"/",'`
+ * ```
+ * Do not include the service worker file itself, as this prevents PWA updates.
+ */
+const SITE_RESOURCES = [
+    "/",
+    "css/style.css",
+    "favicon.ico",
+    "icons/128px.png",
+    "icons/256px.png",
+    "icons/512px.png",
+    "icons/64px.png",
+    "icons/icon.svg",
+    "images/warning.svg",
+    "index.html",
+    "manifest.json",
+    "scripts/app_bg.wasm",
+    "scripts/app.js",
+    "scripts/main.js",
+    ".version",
+];
+
 // #region typescript-workaround-for-service-worker-type
 declare var self: ServiceWorkerGlobalScope;
 export default null;
