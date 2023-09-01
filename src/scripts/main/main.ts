@@ -30,14 +30,17 @@ window.onload = async () => {
             registry?.waiting?.postMessage("perform-update");
         }
 
-        function offer_update() {
-            const btn = document.createElement("button");
-            btn.textContent = "update!"
-            btn.style.position = "absolute";
-            btn.style.left = "50px";
-            btn.style.top = "50px";
-            btn.onclick = apply_update;
-            document.body.append(btn);
+        /** Show a minimal notification to either apply or dismiss the update */
+        async function offer_update() {
+            const message = document.getElementById("update-available");
+            const accept_button = document.getElementById("update-accept");
+            const close_button = document.getElementById("update-close");
+
+            message?.style.setProperty("display", "unset");
+            accept_button?.addEventListener("click", apply_update);
+            close_button?.addEventListener("click", () => {
+                message?.style.setProperty("display", "none");
+            });
         }
 
         // refer to https://stackoverflow.com/a/37582216 for this construct
