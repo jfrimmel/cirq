@@ -125,6 +125,19 @@ async function on_fetch(request: Request): Promise<Response> {
     else return new Response("file not cached", { status: 404 });
 }
 
+/** Handle messages from clients, e.g. to reload the worker and application */
+async function on_message(event: ExtendableMessageEvent) {
+    if (event.data === "perform-update") {
+        console.debug("[service worker] skipping the waiting of the new one");
+        await self.skipWaiting();
+        await self.clients.claim();
+        event.source?.postMessage("done");
+    } else {
+        console.warn("unknown message: ", event.data, "@", event);
+    }
+}
+
 self.addEventListener("install", event => event.waitUntil(on_install()));
 self.addEventListener("activate", event => event.waitUntil(on_activate()));
 self.addEventListener("fetch", event => event.respondWith(on_fetch(event.request)));
+self.addEventListener("message", event => event.waitUntil(on_message(event)));

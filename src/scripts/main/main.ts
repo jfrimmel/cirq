@@ -1,12 +1,58 @@
 'use strict';
 
-window.onload = () => {
+window.onload = async () => {
     // if supported in the current browser (and mode), then register the service
     // worker for the PWA. A browser might not support this for various reasons,
     // e.g. it simply does not support PWAs or it runs in private mode or the
     // connection to the site is untrusted/unencrypted.
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('worker.js');
+        const registry = await navigator.serviceWorker.register('worker.js');
+
+        async function apply_update() {
+            console.log("applying update!");
+            // Use a ping-pong-game to do a full application update. This is
+            // necessary in order to update the service worker _and_ then update
+            // the displayed contents by reloading the page. This is done with
+            // two messages, that are sent from client to worker and vice versa.
+            //
+            //   clients                           service worker
+            //      |                                    |
+            // apply_update                              |
+            //      |-----------perform-update---------->|
+            //      |                                    |
+            //      |                              skipWaiting()
+            //      |                                    |
+            //      |<---------------done----------------|
+            //   reload()                                |
+            //      |                                    |
+            //      X                                    |
+            navigator.serviceWorker.onmessage = () => window.location.reload();
+            registry?.waiting?.postMessage("perform-update");
+        }
+
+        function offer_update() {
+            const btn = document.createElement("button");
+            btn.textContent = "update!"
+            btn.style.position = "absolute";
+            btn.style.left = "50px";
+            btn.style.top = "50px";
+            btn.onclick = apply_update;
+            document.body.append(btn);
+        }
+
+        // refer to https://stackoverflow.com/a/37582216 for this construct
+        if (registry.waiting) {
+            offer_update();
+        }
+        registry.onupdatefound = () => {
+            const new_worker = registry.installing;
+            new_worker?.addEventListener("statechange", event => {
+                if (new_worker.state == "installed" && registry.active) {
+                    offer_update();
+                }
+            })
+        }
+
     }
 };
 
