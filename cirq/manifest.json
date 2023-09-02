@@ -1,6 +1,7 @@
 {
     "name": "cirq",
-    "start_url": ".",
+    "id": "/cirq/",
+    "start_url": "/cirq/",
     "display": "standalone",
     "display_override": [
         "window-controls-overlay"
