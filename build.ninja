@@ -1,5 +1,5 @@
 builddir = build
-site = $builddir/site/cirq
+site = $builddir/site
 tscdir = $builddir/tsc
 wasmbindgendir = $builddir/wasm-bindgen
 
