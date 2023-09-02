@@ -50,8 +50,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 /** The version of this PWA build. */
-// `33` is replaced at build time with the actual version
-const VERSION = "v33";
+// `34` is replaced at build time with the actual version
+const VERSION = "v34";
 const CACHE_NAME = `cirq-${VERSION}`;
 /**
  * The list of files to cache.
@@ -69,21 +69,21 @@ const CACHE_NAME = `cirq-${VERSION}`;
  * Do not include the service worker file itself, as this prevents PWA updates.
  */
 const SITE_RESOURCES = [
-    "/",
-    "css/style.css",
-    "favicon.ico",
-    "icons/128px.png",
-    "icons/256px.png",
-    "icons/512px.png",
-    "icons/64px.png",
-    "icons/icon.svg",
-    "images/warning.svg",
-    "index.html",
-    "manifest.json",
-    "scripts/app_bg.wasm",
-    "scripts/app.js",
-    "scripts/main.js",
-    ".version",
+    "/cirq/",
+    "/cirq/css/style.css",
+    "/cirq/favicon.ico",
+    "/cirq/icons/128px.png",
+    "/cirq/icons/256px.png",
+    "/cirq/icons/512px.png",
+    "/cirq/icons/64px.png",
+    "/cirq/icons/icon.svg",
+    "/cirq/images/warning.svg",
+    "/cirq/index.html",
+    "/cirq/manifest.json",
+    "/cirq/scripts/app_bg.wasm",
+    "/cirq/scripts/app.js",
+    "/cirq/scripts/main.js",
+    "/cirq/.version",
 ];
 // #endregion
 /** Cache all static files on installation or prevent the install on errors */
