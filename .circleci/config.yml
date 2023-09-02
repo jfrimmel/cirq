@@ -26,8 +26,12 @@ jobs:
           name: Disable jekyll builds
           command: touch build/site/.nojekyll
       - run:
-          name: Move PWA start to sub-directory
-          command: sed -i 's|"/"|"/cirq"|' build/site/manifest.json
+          name: Adopt PWA to GitHub Pages entry point
+          command: |
+            # Change the entry-point from `/` to `/cirq`
+            sed -i 's|"/"|"/cirq"|' build/site/manifest.json
+            # prepend `/cirq` to the `SITE_RESOURCES`-array
+            sed -i '/SITE_RESOURCES/,/\]/ s@\(^ *"/\)@\1cirq/@' build/site/worker.js
       - run:
           # https://discuss.circleci.com/t/cant-ignore-the-gh-pages-branch/2002/4
           name: Add CircleCI definitions for this branch
