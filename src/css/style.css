@@ -18,18 +18,25 @@ body {
 }
 
 header {
+    /* make sure, that the whole header is draggable */
+    min-height: max(env(titlebar-area-height, 4em), 4em);
+    -webkit-app-region: drag;
+}
+
+.titlebar {
     display: flex;
     flex-direction: row;
     align-items: center;
     /* for the PWA overlay on desktops */
+    position: absolute;
     left: env(titlebar-area-x, 0);
     top: env(titlebar-area-y, 0);
     width: env(titlebar-area-width, 100%);
-    height: max(env(titlebar-area-height), 4em);
+    height: max(env(titlebar-area-height, 4em), 4em);
     -webkit-app-region: drag;
 }
 
-header input[type="search"] {
+.titlebar input[type="search"] {
     background-color: #3B3E44;
     color: white;
     padding: 8px;
@@ -44,7 +51,7 @@ header input[type="search"] {
 }
 
 @media only screen and (min-width: 1000px) {
-    header input[type="search"] {
+    .titlebar input[type="search"] {
         position: fixed;
         left: 50%;
         transform: translate(-50%);
@@ -55,19 +62,19 @@ header input[type="search"] {
     }
 }
 
-header input[type="search"]:focus {
+.titlebar input[type="search"]:focus {
     background-color: white;
     color: #3B3E44;
     outline: none;
     border-color: #3B3E44;
 }
 
-header input[type="search"]::placeholder {
+.titlebar input[type="search"]::placeholder {
     color: lightgray;
     text-align: center;
 }
 
-header img {
+.titlebar img {
     height: 0.8cm;
     padding: 0.1cm;
     box-sizing: border-box;
