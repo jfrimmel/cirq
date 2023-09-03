@@ -57,9 +57,18 @@ const CACHE_NAME = `cirq-${VERSION}`;
  * find build/site/ -type f |
  *     sort |
  *     grep -v 'build/site/worker.js' |
- *     sed -e 's@build/site/\(.*\)@"\1",@' -e '1i"/",'`
+ *     sed -e 's@build/site\(.*\)@"\1",@' -e '1i"/",'`
  * ```
  * Do not include the service worker file itself, as this prevents PWA updates.
+ *
+ * Note, that those paths must match exactly the way a client browser requests
+ * them. This is especially relevant for GitHub pages, as the entry point for
+ * the PWA is not `/` but rather `/<repository>`. So, normally one would need to
+ * include the `/cirq` in those resources. But, in order to stay independent of
+ * the site host, this is not done, so that one could simply deploy the `site`
+ * directory to any other static file server. Instead, the paths are adjusted on
+ * the actual deployment on the server (refer to the CI/CD pipeline description
+ * to see how it is done).
  */
 const SITE_RESOURCES = [
     "/",
