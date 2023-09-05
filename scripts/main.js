@@ -69,7 +69,7 @@ window.onload = () => __awaiter(void 0, void 0, void 0, function* () {
     const text = yield version.text();
     const node = document.getElementById("version");
     if (node)
-        node.textContent = "alpha-" + text;
+        node.textContent = "0." + text;
 });
 import init from './app.js';
 init().then(() => {
