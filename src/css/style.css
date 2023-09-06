@@ -74,6 +74,10 @@ header {
     text-align: center;
 }
 
+.titlebar input[type="search"]:focus::placeholder {
+    color: #3B3E44;
+}
+
 .titlebar img {
     height: 0.8cm;
     padding: 0.1cm;
