@@ -50,8 +50,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 /** The version of this PWA build. */
-// `37` is replaced at build time with the actual version
-const VERSION = "v37";
+// `38` is replaced at build time with the actual version
+const VERSION = "v38";
 const CACHE_NAME = `cirq-${VERSION}`;
 /**
  * The list of files to cache.
@@ -85,7 +85,7 @@ const SITE_RESOURCES = [
     "/cirq/icons/256px.png",
     "/cirq/icons/512px.png",
     "/cirq/icons/64px.png",
-    "/cirq/icons/icon.svg",
+    "/cirq/icons/logo.svg",
     "/cirq/images/warning.svg",
     "/cirq/index.html",
     "/cirq/manifest.json",
