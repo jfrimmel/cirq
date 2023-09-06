@@ -78,7 +78,7 @@ const SITE_RESOURCES = [
     "/icons/256px.png",
     "/icons/512px.png",
     "/icons/64px.png",
-    "/icons/icon.svg",
+    "/icons/logo.svg",
     "/images/warning.svg",
     "/index.html",
     "/manifest.json",

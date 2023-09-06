@@ -24,16 +24,16 @@ rule svg2ico
 build $site/index.html: cp src/index.html
 build $site/manifest.json: cp src/manifest.json
 build $site/css/style.css: cp src/css/style.css
-build $site/icons/icon.svg: cp icon.svg
-build $site/icons/512px.png: svg2png icon.svg
+build $site/icons/logo.svg: cp src/images/logo.svg
+build $site/icons/512px.png: svg2png src/images/logo.svg
     size = 512
-build $site/icons/256px.png: svg2png icon.svg
+build $site/icons/256px.png: svg2png src/images/logo.svg
     size = 256
-build $site/icons/128px.png: svg2png icon.svg
+build $site/icons/128px.png: svg2png src/images/logo.svg
     size = 128
-build $site/icons/64px.png: svg2png icon.svg
+build $site/icons/64px.png: svg2png src/images/logo.svg
     size = 64
-build $site/favicon.ico: svg2ico icon.svg
+build $site/favicon.ico: svg2ico src/images/logo.svg
 build $site/images/warning.svg: cp src/images/warning.svg
 
 rule tsc
