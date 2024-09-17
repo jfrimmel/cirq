@@ -28,5 +28,5 @@ features = [
 ]
 
 [dependencies.winit]
-version = "0.29.1-beta"
+version = "=0.29.1-beta"
 default-features = false
