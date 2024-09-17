@@ -16,8 +16,8 @@ window.onload = () => __awaiter(void 0, void 0, void 0, function* () {
     if ('serviceWorker' in navigator) {
         const registry = yield navigator.serviceWorker.register('worker.js');
         function apply_update() {
-            var _a;
             return __awaiter(this, void 0, void 0, function* () {
+                var _a;
                 console.log("applying update!");
                 // Use a ping-pong-game to do a full application update. This is
                 // necessary in order to update the service worker _and_ then update

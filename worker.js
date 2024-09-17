@@ -50,8 +50,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 /** The version of this PWA build. */
-// `39` is replaced at build time with the actual version
-const VERSION = "v39";
+// `40` is replaced at build time with the actual version
+const VERSION = "v40";
 const CACHE_NAME = `cirq-${VERSION}`;
 /**
  * The list of files to cache.
@@ -141,8 +141,8 @@ function on_fetch(request) {
 }
 /** Handle messages from clients, e.g. to reload the worker and application */
 function on_message(event) {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         if (event.data === "perform-update") {
             console.debug("[service worker] skipping the waiting of the new one");
             yield self.skipWaiting();
